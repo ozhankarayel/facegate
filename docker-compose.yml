@@ -1,0 +1,16 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: facegate_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: facegate
+      POSTGRES_USER: facegate
+      POSTGRES_PASSWORD: facegate_dev_pw
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
