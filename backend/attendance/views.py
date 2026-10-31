@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from django.conf import settings
+from django.utils import timezone
 from pgvector.django import CosineDistance
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
@@ -44,11 +47,16 @@ class RecognizeView(APIView):
         score = 1.0 - float(match.distance)
         accepted = score >= settings.RECOGNITION_THRESHOLD
 
-        AccessLog.objects.create(
-            person=match.person if accepted else None,
-            score=score,
-            result=AccessLog.Result.ACCEPTED if accepted else AccessLog.Result.REJECTED,
-        )
+        result = AccessLog.Result.ACCEPTED if accepted else AccessLog.Result.REJECTED
+        person = match.person if accepted else None
+
+        # Cooldown: aynı kişi/sonuç için son 30 sn içinde log varsa yenisini yazma
+        since = timezone.now() - timedelta(seconds=settings.LOG_COOLDOWN_SECONDS)
+        already_logged = AccessLog.objects.filter(
+            person=person, result=result, timestamp__gte=since
+        ).exists()
+        if not already_logged:
+            AccessLog.objects.create(person=person, score=score, result=result)
 
         return Response(
             {
