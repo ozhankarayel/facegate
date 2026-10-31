@@ -147,3 +147,10 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+
+# --- FaceGate ayarları ---
+FACE_MODEL_NAME = "buffalo_s"
+FACE_DET_SIZE = (640, 640)
+RECOGNITION_THRESHOLD = 0.4   # 4. haftada ROC analiziyle kalibre edilecek
+MIN_DET_SCORE = 0.6           # kayıtta kabul edilecek minimum yüz tespit skoru
