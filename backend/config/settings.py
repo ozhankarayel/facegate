@@ -152,6 +152,8 @@ MAILERS = {
 # --- FaceGate ayarları ---
 FACE_MODEL_NAME = "buffalo_s"
 FACE_DET_SIZE = (640, 640)
-RECOGNITION_THRESHOLD = 0.4   # 4. haftada ROC analiziyle kalibre edilecek
+RECOGNITION_THRESHOLD = 0.30   # LFW train+test taramasında FAR %0.00 bölgesinin (>=0.25) içinde güvenlik payı bırakıldı
 MIN_DET_SCORE = 0.6           # kayıtta kabul edilecek minimum yüz tespit skoru
 LOG_COOLDOWN_SECONDS = 30   # aynı kişi/sonuç için tekrar log yazma süresi
+LIVENESS_MIN_FRAMES = 8       # en az bu kadar kare gelmeli
+LIVENESS_DROP_RATIO = 0.70    # EAR, taban değerin %70'inin altına düşerse "kapalı" say
