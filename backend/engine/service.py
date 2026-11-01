@@ -13,6 +13,7 @@ def get_engine() -> FaceEngine:
     return FaceEngine(
         model_name=settings.FACE_MODEL_NAME,
         det_size=settings.FACE_DET_SIZE,
+        threads=settings.FACE_THREADS,
     )
 
 

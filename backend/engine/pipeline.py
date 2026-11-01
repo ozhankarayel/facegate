@@ -1,11 +1,24 @@
 import numpy as np
+import onnxruntime as ort
 from insightface.app import FaceAnalysis
 
 
 class FaceEngine:
-    def __init__(self, model_name="buffalo_s", det_size=(640, 640), providers=None):
+    def __init__(self, model_name="buffalo_s", det_size=(640, 640), providers=None, threads=4):
         providers = providers or ["CPUExecutionProvider"]
-        self.app = FaceAnalysis(name=model_name, providers=providers)
+
+        # Benchmark sonucu: 4-6 thread en iyisi, 12 thread belirgin şekilde yavaş.
+        so = ort.SessionOptions()
+        so.intra_op_num_threads = threads
+        so.inter_op_num_threads = 1
+
+        # Sadece tespit + embedding: landmark, yaş/cinsiyet modülleri kapalı.
+        self.app = FaceAnalysis(
+            name=model_name,
+            providers=providers,
+            sess_options=so,
+            allowed_modules=["detection", "recognition"],
+        )
         self.app.prepare(ctx_id=-1, det_size=det_size)
 
     def extract(self, bgr_image):
@@ -25,7 +38,7 @@ def cosine_similarity(a, b):
     return float(np.dot(a, b))
 
 
-def best_match(embedding, gallery, threshold=0.4):
+def best_match(embedding, gallery, threshold=0.30):
     """gallery: {isim: embedding}. (isim, skor) döner, eşleşme yoksa (None, skor)."""
     best_name, best_score = None, -1.0
     for name, ref in gallery.items():

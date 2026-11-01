@@ -6,3 +6,4 @@ node_modules/
 .next/
 *.sqlite3
 benchmarks/results/
+benchmarks/sample_frame.jpg
